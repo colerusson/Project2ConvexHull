@@ -66,15 +66,35 @@ class ConvexHullSolver(QObject):
 
         t1 = time.time()
         # TODO: SORT THE POINTS BY INCREASING X-VALUE
+        # sort the points by increasing x-value
+        points.sort(key=lambda p: p.x())
         t2 = time.time()
 
         t3 = time.time()
         # this is a dummy polygon of the first 3 unsorted points
-        polygon = [QLineF(points[i], points[(i + 1) % 3]) for i in range(3)]
+        # polygon = [QLineF(points[i], points[(i + 1) % 3]) for i in range(3)]
+
         # TODO: REPLACE THE LINE ABOVE WITH A CALL TO YOUR DIVIDE-AND-CONQUER CONVEX HULL SOLVER
+        # make a call to a divide-and-conquer convex hull solver
+        polygon = self.divide_and_conquer(points)
+
         t4 = time.time()
 
         # when passing lines to the display, pass a list of QLineF objects.  Each QLineF
         # object can be created with two QPointF objects corresponding to the endpoints
         self.showHull(polygon, RED)
         self.showText('Time Elapsed (Convex Hull): {:3.3f} sec'.format(t4 - t3))
+
+    # implement a divide-and-conquer convex hull solver
+    def divide_and_conquer(self, points):
+        # base case: if there are 3 or fewer points, return the convex hull
+        if len(points) <= 3:
+            return [QLineF(points[i], points[(i + 1) % len(points)]) for i in range(len(points))]
+        # divide the points into two halves
+        left = points[:len(points) // 2]
+        right = points[len(points) // 2:]
+        # recurse on the two halves
+        left_hull = self.divide_and_conquer(left)
+        right_hull = self.divide_and_conquer(right)
+        # merge the two convex hulls
+        return self.merge(left_hull, right_hull)
