@@ -23,29 +23,44 @@ PAUSE = 0.25
 
 # merging function for two hulls
 def merge(left_hull, right_hull):
-    hull = []
-    n = len(left_hull)
-    m = len(right_hull)
-    i = 0
-    j = 0
+    n, m = len(left_hull), len(right_hull)
+    i, j = 0, 0
+    upper_hull, lower_hull = [], []
 
     while i < n and j < m:
         if left_hull[i].p1().y() < right_hull[j].p1().y():
-            hull.append(left_hull[i])
+            upper_hull.append(left_hull[i])
             i += 1
         else:
-            hull.append(right_hull[j])
+            upper_hull.append(right_hull[j])
             j += 1
 
     while i < n:
-        hull.append(left_hull[i])
+        upper_hull.append(left_hull[i])
         i += 1
 
     while j < m:
-        hull.append(right_hull[j])
+        upper_hull.append(right_hull[j])
         j += 1
 
-    return hull
+    i, j = n - 1, m - 1
+    while i >= 0 and j >= 0:
+        if left_hull[i].p1().y() > right_hull[j].p1().y():
+            lower_hull.append(left_hull[i])
+            i -= 1
+        else:
+            lower_hull.append(right_hull[j])
+            j -= 1
+
+    while i >= 0:
+        lower_hull.append(left_hull[i])
+        i -= 1
+
+    while j >= 0:
+        lower_hull.append(right_hull[j])
+        j -= 1
+
+    return upper_hull + lower_hull[::-1]
 
 
 #
@@ -109,14 +124,14 @@ class ConvexHullSolver(QObject):
 
     # the divide-and-conquer convex hull solver
     def divide_and_conquer(self, points):
-        # base case: if there are 3 or fewer points, return the convex hull
+        # if there are 3 or fewer points, return the convex hull
         if len(points) <= 3:
             return [QLineF(points[i], points[(i + 1) % len(points)]) for i in range(len(points))]
         # divide the points into two halves
         left = points[:len(points) // 2]
         right = points[len(points) // 2:]
-        # recurse on the two halves
+        # recursive call on each half
         left_hull = self.divide_and_conquer(left)
         right_hull = self.divide_and_conquer(right)
-        # merge the two convex hulls
+        # merge the two hulls
         return merge(left_hull, right_hull)
