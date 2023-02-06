@@ -21,9 +21,37 @@ BLUE = (0, 0, 255)
 PAUSE = 0.25
 
 
+# merging function for two hulls
+def merge(left_hull, right_hull):
+    hull = []
+    n = len(left_hull)
+    m = len(right_hull)
+    i = 0
+    j = 0
+
+    while i < n and j < m:
+        if left_hull[i].p1().y() < right_hull[j].p1().y():
+            hull.append(left_hull[i])
+            i += 1
+        else:
+            hull.append(right_hull[j])
+            j += 1
+
+    while i < n:
+        hull.append(left_hull[i])
+        i += 1
+
+    while j < m:
+        hull.append(right_hull[j])
+        j += 1
+
+    return hull
+
+
 #
 # This is the class you have to complete.
 #
+
 class ConvexHullSolver(QObject):
 
     # Class constructor
@@ -65,19 +93,13 @@ class ConvexHullSolver(QObject):
         assert (type(points) == list and type(points[0]) == QPointF)
 
         t1 = time.time()
-        # TODO: SORT THE POINTS BY INCREASING X-VALUE
         # sort the points by increasing x-value
         points.sort(key=lambda p: p.x())
         t2 = time.time()
 
         t3 = time.time()
-        # this is a dummy polygon of the first 3 unsorted points
-        # polygon = [QLineF(points[i], points[(i + 1) % 3]) for i in range(3)]
-
-        # TODO: REPLACE THE LINE ABOVE WITH A CALL TO YOUR DIVIDE-AND-CONQUER CONVEX HULL SOLVER
-        # make a call to a divide-and-conquer convex hull solver
+        # call the divide-and-conquer convex hull solver
         polygon = self.divide_and_conquer(points)
-
         t4 = time.time()
 
         # when passing lines to the display, pass a list of QLineF objects.  Each QLineF
@@ -85,7 +107,7 @@ class ConvexHullSolver(QObject):
         self.showHull(polygon, RED)
         self.showText('Time Elapsed (Convex Hull): {:3.3f} sec'.format(t4 - t3))
 
-    # implement a divide-and-conquer convex hull solver
+    # the divide-and-conquer convex hull solver
     def divide_and_conquer(self, points):
         # base case: if there are 3 or fewer points, return the convex hull
         if len(points) <= 3:
@@ -97,4 +119,4 @@ class ConvexHullSolver(QObject):
         left_hull = self.divide_and_conquer(left)
         right_hull = self.divide_and_conquer(right)
         # merge the two convex hulls
-        return self.merge(left_hull, right_hull)
+        return merge(left_hull, right_hull)
