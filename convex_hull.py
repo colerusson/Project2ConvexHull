@@ -21,7 +21,6 @@ BLUE = (0, 0, 255)
 PAUSE = 0.25
 
 
-# merging function for two hulls
 def merge(left_hull, right_hull):
     n, m = len(left_hull), len(right_hull)
     i, j = 0, 0
@@ -62,10 +61,10 @@ def merge(left_hull, right_hull):
 
     return upper_hull + lower_hull[::-1]
 
-
 #
 # This is the class you have to complete.
 #
+
 
 class ConvexHullSolver(QObject):
 
