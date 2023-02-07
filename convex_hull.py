@@ -59,11 +59,32 @@ def merge(left_hull, right_hull):
         lower_hull.append(right_hull[j])
         j -= 1
 
-    return upper_hull + lower_hull[::-1]
+    final_hull = upper_hull + lower_hull[::-1]
+
+    return [QLineF(final_hull[i], final_hull[(i + 1) % len(final_hull)]) for i in range(len(final_hull))]
 
 #
 # This is the class you have to complete.
 #
+
+
+def convex_hull_solver(points):
+    hulls = []
+    for point in points:
+        hulls.append(point)
+
+    convex_hulls = []
+    while len(hulls) > 1:
+        for i in range(0, len(hulls) - 1, 2):
+            convex_hulls.append(merge(hulls[i], hulls[i + 1]))
+        if len(hulls) % 2 == 1:
+            convex_hulls.append(hulls[-1])
+        hulls = convex_hulls
+        convex_hulls = []
+
+    convex_hulls = hulls[0]
+
+    return convex_hulls
 
 
 class ConvexHullSolver(QObject):
@@ -132,5 +153,7 @@ class ConvexHullSolver(QObject):
         # recursive call on each half
         left_hull = self.divide_and_conquer(left)
         right_hull = self.divide_and_conquer(right)
-        # merge the two hulls
+        # merge the two hulls)
         return merge(left_hull, right_hull)
+
+    # different approach - break down to make each point into a hull, then pass that into merge function
