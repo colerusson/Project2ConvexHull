@@ -108,7 +108,6 @@ def merge(left, right):
     current_point = start_point
     # create a list of tuples, hull_points, which will contain the points on the convex hull
     hull_points = []
-
     while True:
         # add the current point to the convex hull
         hull_points.append(current_point)
