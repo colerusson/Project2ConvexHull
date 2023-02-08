@@ -117,6 +117,9 @@ def merge(left, right):
         for i in range(1, len(points)):
             # find the point with the largest counterclockwise angle relative to the current point
             if (next_point == current_point) or (
+                # the cross product of the vectors (current_point, next_point) and (current_point, points[i])
+                # is positive if the angle between the vectors is counterclockwise
+                # and negative if the angle between the vectors is clockwise
                     (points[i][1] - current_point[1]) * (next_point[0] - current_point[0])
                     > (next_point[1] - current_point[1]) * (points[i][0] - current_point[0])
             ):
